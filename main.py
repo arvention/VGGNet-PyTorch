@@ -66,13 +66,14 @@ if __name__ == '__main__':
 
     # dataset info
     parser.add_argument('--input_channels', type=int, default=3)
-    parser.add_argument('--class_count', type=int, default=0)
+    parser.add_argument('--class_count', type=int, default=256)
 
     # training settings
     parser.add_argument('--lr', type=float, default=0.01)
     parser.add_argument('--momentum', type=float, default=0.9)
-    parser.add_argument('--num_epochs', type=int, default=0)
-    parser.add_argument('--batch_size', type=int, default=0)
+    parser.add_argument('--weight_decay', type=float, default=0.0005)
+    parser.add_argument('--num_epochs', type=int, default=74)
+    parser.add_argument('--batch_size', type=int, default=64)
     parser.add_argument('--pretrained_model', type=str, default=None)
     parser.add_argument('--config', type=str, default='E',
                         choices=['A', 'B', 'C', 'D', 'E'])
@@ -86,7 +87,7 @@ if __name__ == '__main__':
     parser.add_argument('--use_tensorboard', type=str2bool, default=True)
 
     # dataset
-    parser.add_argument('--data_path', type=str, default=None)
+    parser.add_argument('--data_path', type=str, default='../data/c256/')
     parser.add_argument('--train_data_path', type=str,
                         default='caltech_256_60_train_nobg_norm.hdf5')
     parser.add_argument('--train_x_key', type=str, default='train_x')
