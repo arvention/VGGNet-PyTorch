@@ -1,7 +1,7 @@
 import os
 import argparse
-
-
+from solver import Solver
+from data_loader import get_loader
 from torch.backends import cudnn
 from utils import mkdir
 from datetime import datetime
@@ -47,9 +47,17 @@ def main(version, config):
     mkdir(config.model_save_path)
 
     if config.mode == 'train':
-        pass  # TODO
+        data_loader = get_loader(config.data_path + config.train_data_path,
+                                 config.train_x_key, config.train_y_key,
+                                 config.batch_size, config.mode)
+        solver = Solver(version, data_loader, vars(config))
+        solver.train()
     elif config.mode == 'test':
-        pass  # TODO
+        data_loader = get_loader(config.data_path + config.test_data_path,
+                                 config.test_x_key, config.test_y_key,
+                                 config.batch_size, config.mode)
+        solver = Solver(version, data_loader, vars(config))
+        solver.test()
 
 
 if __name__ == '__main__':
@@ -75,6 +83,14 @@ if __name__ == '__main__':
 
     # datatset
     parser.add_argument('--data_path', type=str, default=None)
+    parser.add_argument('--train_data_path', type=str,
+                        default='caltech_256_60_train_nobg_norm.hdf5')
+    parser.add_argument('--train_x_key', type=str, default='train_x')
+    parser.add_argument('--train_y_key', type=str, default='train_y')
+    parser.add_argument('--test_data_path', type=str,
+                        default='caltech_256_60_test_nobg_norm.hdf5')
+    parser.add_argument('--test_x_key', type=str, default='test_x')
+    parser.add_argument('--test_y_key', type=str, default='test_y')
 
     # path
     parser.add_argument('--log_path', type=str, default='./logs')
