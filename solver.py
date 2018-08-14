@@ -39,7 +39,7 @@ class Solver(object):
 
         # instantiate VGGNet model
         self.model = VGGNet(self.config,
-                            self.batch_norm,
+                            self.use_batch_norm,
                             self.input_channels,
                             self.class_count,
                             self.init_weights)

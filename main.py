@@ -77,7 +77,7 @@ if __name__ == '__main__':
     parser.add_argument('--pretrained_model', type=str, default=None)
     parser.add_argument('--config', type=str, default='E',
                         choices=['A', 'B', 'C', 'D', 'E'])
-    parser.add_argument('--use_bn', type=str2bool, default=False)
+    parser.add_argument('--use_batch_norm', type=str2bool, default=False)
     parser.add_argument('--init_weights', type=str2bool, default=True)
 
     # misc
