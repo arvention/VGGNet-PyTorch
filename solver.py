@@ -38,7 +38,11 @@ class Solver(object):
         """
 
         # instantiate VGGNet model
-        self.model = VGGNet(self.input_channels, self.class_count)
+        self.model = VGGNet(self.config,
+                            self.batch_norm,
+                            self.input_channels,
+                            self.class_count,
+                            self.init_weights)
 
         # instantiate loss criterion
         self.criterion = nn.CrossEntropyLoss()

@@ -74,6 +74,10 @@ if __name__ == '__main__':
     parser.add_argument('--num_epochs', type=int, default=0)
     parser.add_argument('--batch_size', type=int, default=0)
     parser.add_argument('--pretrained_model', type=str, default=None)
+    parser.add_argument('--config', type=str, default='E',
+                        choices=['A', 'B', 'C', 'D', 'E'])
+    parser.add_argument('--use_bn', type=str2bool, default=False)
+    parser.add_argument('--init_weights', type=str2bool, default=True)
 
     # misc
     parser.add_argument('--mode', type=str, default='train',
@@ -81,7 +85,7 @@ if __name__ == '__main__':
     parser.add_argument('--use_gpu', type=str2bool, default=True)
     parser.add_argument('--use_tensorboard', type=str2bool, default=True)
 
-    # datatset
+    # dataset
     parser.add_argument('--data_path', type=str, default=None)
     parser.add_argument('--train_data_path', type=str,
                         default='caltech_256_60_train_nobg_norm.hdf5')
