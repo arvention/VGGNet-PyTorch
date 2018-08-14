@@ -73,16 +73,18 @@ class VGGNet(nn.Module):
                 layers.append(nn.MaxPool2d(kernel_size=2, stride=2))
             else:
                 layer = layer.split('-')
+                kernel_size = int(layer[0])
+                out_channels = int(layer[1])
                 layers.append(nn.Conv2d(in_channels=in_channels,
-                                        out_channels=layer[1],
-                                        kernel_size=layer[0],
+                                        out_channels=out_channels,
+                                        kernel_size=kernel_size,
                                         padding=1))
 
                 if self.batch_norm:
-                    layers.append(nn.BatchNorm2d(layer[1]))
+                    layers.append(nn.BatchNorm2d(out_channels))
 
                 layers.append(nn.ReLU(inplace=True))
-                in_channels = layer[1]
+                in_channels = out_channels
 
         return nn.Sequential(*layers)
 
