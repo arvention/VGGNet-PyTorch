@@ -7,7 +7,7 @@ from torchvision import transforms
 
 class Hdf5Dataset(Dataset):
 
-    def __int__(self, data_path, x_key, y_key):
+    def __init__(self, data_path, x_key, y_key):
         """
         Initialize dataset
         """
