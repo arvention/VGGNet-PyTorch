@@ -51,7 +51,8 @@ class Solver(object):
         self.optimizer = optim.SGD(
             self.model.parameters(),
             lr=self.lr,
-            momentum=self.momentum
+            momentum=self.momentum,
+            weight_decay=self.weight_decay
         )
 
         # print network
