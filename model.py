@@ -120,7 +120,6 @@ class VGGNet(nn.Module):
 
     def forward(self, x):
         y = self.conv_net(x)
-        print(y.size())
-        y = y.view(-1, y.size(0) * y.size(1) * y.size(2))
+        y = y.view(-1, y.size(1) * y.size(2) * y.size(3))
         y = self.fc_net(y)
         return y
