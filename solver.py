@@ -189,6 +189,9 @@ class Solver(object):
         return loss
 
     def train_evaluate(self, e):
+        """
+        Evaluates the performance of the model using the train dataset
+        """
         top_1_correct, top_5_correct, total = self.eval(self.data_loader)
         log = "Epoch [{}/{}]--top_1_acc: {:.4f}--top_5_acc: {:.4f}".format(
             e + 1,
@@ -201,7 +204,7 @@ class Solver(object):
 
     def test(self):
         """
-        Evaluates the performance of the model using a test dataset
+        Evaluates the performance of the model using the test dataset
         """
         top_1_correct, top_5_correct, total = self.eval(self.data_loader)
         log = "top_1_acc: {:.4f}--top_5_acc: {:.4f}".format(
