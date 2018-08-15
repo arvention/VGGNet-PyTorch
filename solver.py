@@ -134,7 +134,7 @@ class Solver(object):
 
         # start with a trained model if exists
         if self.pretrained_model:
-            start = int(self.pretrained_model.split('_')[0])
+            start = int(self.pretrained_model.split('_')[1])
         else:
             start = 0
 
@@ -158,9 +158,9 @@ class Solver(object):
 
             # evaluate on train dataset
             if (e + 1) % self.train_eval_step == 0:
-                top_1_acc, top_5top_1_acc = self.train_evaluate(e)
+                top_1_acc, top_5_acc = self.train_evaluate(e)
                 self.top_1_acc.append((e, top_1_acc))
-                self.top_5_acc.append((e, top_5top_1_acc))
+                self.top_5_acc.append((e, top_5_acc))
 
     def model_step(self, images, labels):
         """
@@ -212,7 +212,7 @@ class Solver(object):
 
     def eval(self, data_loader):
         """
-        Returns the mean Average Precision (mAP)
+        Returns the count of top 1 and top 5 predictions
         """
 
         self.model.eval()
