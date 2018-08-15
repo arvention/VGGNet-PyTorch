@@ -221,25 +221,26 @@ class Solver(object):
         top_5_correct = 0
         total = 0
 
-        for images, labels in data_loader:
+        with torch.no_grad():
+            for images, labels in data_loader:
 
-            images = to_var(images, self.use_gpu)
-            labels = to_var(labels, self.use_gpu)
+                images = to_var(images, self.use_gpu)
+                labels = to_var(labels, self.use_gpu)
 
-            output = self.model(images)
-            total += labels.size()[0]
+                output = self.model(images)
+                total += labels.size()[0]
 
-            # top 1
-            # get the max for each instance in the batch
-            _, top_1_output = torch.max(output.data, dim=1)
+                # top 1
+                # get the max for each instance in the batch
+                _, top_1_output = torch.max(output.data, dim=1)
 
-            top_1_correct += torch.sum(torch.eq(labels.squeeze(),
-                                                top_1_output))
+                top_1_correct += torch.sum(torch.eq(labels.squeeze(),
+                                                    top_1_output))
 
-            # top 5
-            _, top_5_output = torch.topk(output.data, k=5, dim=1)
-            for i, label in enumerate(labels):
-                if label in top_5_output[i]:
-                    top_5_correct += 1
+                # top 5
+                _, top_5_output = torch.topk(output.data, k=5, dim=1)
+                for i, label in enumerate(labels):
+                    if label in top_5_output[i]:
+                        top_5_correct += 1
 
         return top_1_correct.item(), top_5_correct, total
