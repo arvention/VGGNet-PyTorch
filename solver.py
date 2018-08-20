@@ -134,7 +134,7 @@ class Solver(object):
 
         # start with a trained model if exists
         if self.pretrained_model:
-            start = int(self.pretrained_model.split('_')[1])
+            start = int(self.pretrained_model.split('_')[1]) - 1
         else:
             start = 0
 
