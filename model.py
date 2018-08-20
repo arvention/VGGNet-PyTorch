@@ -8,7 +8,7 @@ import torch.nn as nn
    the second number is the output channels
  """
 
-config = {
+configs = {
     'A': ['3-64', 'M',
           '3-128', 'M',
           '3-256', '3-256', 'M',
@@ -68,7 +68,7 @@ class VGGNet(nn.Module):
         layers = []
         in_channels = self.channels
 
-        for layer in config[self.config]:
+        for layer in configs[self.config]:
             if layer == 'M':
                 layers.append(nn.MaxPool2d(kernel_size=2, stride=2))
             else:
