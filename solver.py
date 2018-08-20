@@ -97,16 +97,15 @@ class Solver(object):
         elapsed = str(datetime.timedelta(seconds=elapsed))
 
         log = "Elapsed {}/{} -- {}, Epoch [{}/{}] Iter [{}/{}]," \
-              "loss: {:.4f}".format(
-               elapsed,
-               epoch_time,
-               total_time,
-               e + 1,
-               self.num_epochs,
-               i + 1,
-               iters_per_epoch,
-               loss
-               )
+              "loss: {:.4f}".format(elapsed,
+                                    epoch_time,
+                                    total_time,
+                                    e + 1,
+                                    self.num_epochs,
+                                    i + 1,
+                                    iters_per_epoch,
+                                    loss
+                                    )
 
         # TODO: add tensorboard
 
