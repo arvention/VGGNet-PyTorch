@@ -161,6 +161,21 @@ class Solver(object):
                 self.top_1_acc.append((e, top_1_acc))
                 self.top_5_acc.append((e, top_5_acc))
 
+        # print losses
+        print('\n--Losses--')
+        for e, loss in self.losses:
+            print(e, '{:.4f}'.format(loss))
+
+        # print top_1_acc
+        print('\n--Top 1 accuracy--')
+        for e, acc in self.top_1_acc:
+            print(e, '{:.4f}'.format(acc))
+
+        # print top_5_acc
+        print('\n--Top 5 accuracy--')
+        for e, acc in self.top_5_acc:
+            print(e, '{:.4f}'.format(acc))
+
     def model_step(self, images, labels):
         """
         A step for each iteration
