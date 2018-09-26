@@ -37,7 +37,7 @@ class Solver(object):
         Instantiates the model, loss criterion, and optimizer
         """
 
-        # instantiate VGGNet model
+        # instantiate model
         self.model = VGGNet(self.config,
                             self.use_batch_norm,
                             self.input_channels,
@@ -47,17 +47,16 @@ class Solver(object):
         # instantiate loss criterion
         self.criterion = nn.CrossEntropyLoss()
 
-        # TODO: instantiate optimizer
-        self.optimizer = optim.SGD(
-            self.model.parameters(),
-            lr=self.lr,
-            momentum=self.momentum,
-            weight_decay=self.weight_decay
-        )
+        # instantiate optimizer
+        self.optimizer = optim.SGD(self.model.parameters(),
+                                   lr=self.lr,
+                                   momentum=self.momentum,
+                                   weight_decay=self.weight_decay)
 
         # print network
         self.print_network(self.model, 'VGGNet')
 
+        # use gpu if enabled
         if torch.cuda.is_available() and self.use_gpu:
             self.model.cuda()
             self.criterion.cuda()
@@ -69,9 +68,9 @@ class Solver(object):
         num_params = 0
         for p in model.parameters():
             num_params += p.numel()
-            print(name)
-            print(model)
-            print("The number of parameters: {}".format(num_params))
+        print(name)
+        print(model)
+        print("The number of parameters: {}".format(num_params))
 
     def load_pretrained_model(self):
         """
@@ -96,7 +95,7 @@ class Solver(object):
         total_time = str(datetime.timedelta(seconds=total_time))
         elapsed = str(datetime.timedelta(seconds=elapsed))
 
-        log = "Elapsed {}/{} -- {}, Epoch [{}/{}] Iter [{}/{}]," \
+        log = "Elapsed {}/{} -- {}, Epoch [{}/{}], Iter [{}/{}], " \
               "loss: {:.4f}".format(elapsed,
                                     epoch_time,
                                     total_time,
@@ -104,8 +103,7 @@ class Solver(object):
                                     self.num_epochs,
                                     i + 1,
                                     iters_per_epoch,
-                                    loss
-                                    )
+                                    loss)
 
         # TODO: add tensorboard
 
@@ -117,7 +115,7 @@ class Solver(object):
         """
         path = os.path.join(
             self.model_save_path,
-            '{}_{}_{}.pth'.format(self.version, e + 1, i + 1)
+            '/{}/{}--{}.pth'.format(self.version, e + 1, i + 1)
         )
         torch.save(self.model.state_dict(), path)
 
@@ -159,7 +157,7 @@ class Solver(object):
 
         # start with a trained model if exists
         if self.pretrained_model:
-            start = int(self.pretrained_model.split('_')[1]) - 1
+            start = int(self.pretrained_model.split('--')[0])
         else:
             start = 0
 
@@ -207,6 +205,7 @@ class Solver(object):
         Returns the count of top 1 and top 5 predictions
         """
 
+        # set the model to eval mode
         self.model.eval()
 
         top_1_correct = 0
