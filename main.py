@@ -74,7 +74,8 @@ if __name__ == '__main__':
     parser.add_argument('--weight_decay', type=float, default=0.0005)
     parser.add_argument('--num_epochs', type=int, default=74)
     parser.add_argument('--batch_size', type=int, default=32)
-    parser.add_argument('--pretrained_model', type=str, default=None)
+    parser.add_argument('--pretrained_model', type=str,
+                        default=None)
     parser.add_argument('--config', type=str, default='D',
                         choices=['A', 'B', 'C', 'D', 'E'])
     parser.add_argument('--use_batch_norm', type=str2bool, default=False)
