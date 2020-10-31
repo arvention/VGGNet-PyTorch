@@ -1,40 +1,72 @@
 import os
+from utils.utils import write_print, mkdir
 import argparse
 from solver import Solver
 from data_loader import get_loader
 from torch.backends import cudnn
-from utils import mkdir
 from datetime import datetime
 import zipfile
 import torch
 import numpy as np
 
 
-def zipdir(path, ziph):
+SAVE_NAME_FORMAT = 'files_{}.{}'
+
+
+def zip_directory(path, zip_file):
+    """Stores all py and cfg project files inside a zip file
+
+    [description]
+
+    Arguments:
+        path {string} -- current path
+        zip_file {zipfile.ZipFile} -- zip file to contain the project files
+    """
     files = os.listdir(path)
     for file in files:
-        if file.endswith(".py") or file.endswith("cfg"):
-            ziph.write(os.path.join(path, file))
-            if file.endswith("cfg"):
+        if file.endswith('.py') or file.endswith('cfg'):
+            zip_file.write(os.path.join(path, file))
+            if file.endswith('cfg'):
                 os.remove(file)
 
 
 def save_config(config):
-    current_time = str(datetime.now()).replace(":", "_")
-    save_name = "vggnet_files_{}.{}"
-    with open(save_name.format(current_time, "cfg"), "w") as f:
-        for k, v in sorted(args.items()):
-            f.write('%s: %s\n' % (str(k), str(v)))
+    """saves the configuration of the experiment
 
-    zipf = zipfile.ZipFile(save_name.format(current_time, "zip"),
-                           'w', zipfile.ZIP_DEFLATED)
-    zipdir('.', zipf)
-    zipf.close()
+    [description]
 
-    return current_time
+    Arguments:
+        config {dict} -- contains argument and its value
+
+    Returns:
+        string -- version based on the current time
+    """
+    version = str(datetime.now()).replace(':', '_')
+    cfg_name = SAVE_NAME_FORMAT.format(version, 'cfg')
+    with open(cfg_name, 'w') as f:
+        for k, v in config.items():
+            f.write('{}: {}\n'.format(str(k), str(v)))
+
+    zip_name = SAVE_NAME_FORMAT.format(version, 'zip')
+    zip_file = zipfile.ZipFile(zip_name, 'w', zipfile.ZIP_DEFLATED)
+    zip_directory('.', zip_file)
+    zip_file.close()
+
+    return version
 
 
-def str2bool(v):
+def string_to_boolean(v):
+    """Converts string to boolean
+
+    [description]
+
+    Arguments:
+        v {string} -- string representation of a boolean values;
+        must be true or false
+
+    Returns:
+        boolean -- boolean true or false
+    """
     return v.lower() in ('true')
 
 
@@ -67,42 +99,58 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
 
     # dataset info
-    parser.add_argument('--input_channels', type=int, default=3)
-    parser.add_argument('--class_count', type=int, default=256)
+    parser.add_argument('--input_channels', type=int, default=3,
+                        help='Number of input channels')
+    parser.add_argument('--class_count', type=int, default=256,
+                        help='Number of classes in dataset')
 
     # training settings
-    parser.add_argument('--lr', type=float, default=0.01)
-    parser.add_argument('--momentum', type=float, default=0.9)
-    parser.add_argument('--weight_decay', type=float, default=0.0005)
-    parser.add_argument('--num_epochs', type=int, default=74)
-    parser.add_argument('--batch_size', type=int, default=32)
+    parser.add_argument('--lr', type=float, default=0.01,
+                        help='Learning rate')
+    parser.add_argument('--momentum', type=float, default=0.9,
+                        help='Momentum')
+    parser.add_argument('--weight_decay', type=float, default=0.0005,
+                        help='Weight decay')
+    parser.add_argument('--num_epochs', type=int, default=74,
+                        help='Number of epochs')
+    parser.add_argument('--batch_size', type=int, default=32,
+                        help='Batch size')
     parser.add_argument('--pretrained_model', type=str,
-                        default=None)
+                        default=None,
+                        help='Pre-trained model')
     parser.add_argument('--config', type=str, default='D',
-                        choices=['A', 'B', 'C', 'D', 'E'])
-    parser.add_argument('--use_batch_norm', type=str2bool, default=False)
-    parser.add_argument('--init_weights', type=str2bool, default=True)
+                        choices=['A', 'B', 'C', 'D', 'E'],
+                        help='Model configuration')
+    parser.add_argument('--use_batch_norm', type=string_to_boolean,
+                        default=False,
+                        help='Toggles batch normalization in layers')
+    parser.add_argument('--init_weights', type=string_to_boolean, default=True,
+                        help='Toggles weight initialization')
 
     # misc
     parser.add_argument('--mode', type=str, default='train',
-                        choices=['train', 'test'])
-    parser.add_argument('--use_gpu', type=str2bool, default=True)
-    parser.add_argument('--use_tensorboard', type=str2bool, default=True)
+                        choices=['train', 'test'],
+                        help='Mode of execution')
+    parser.add_argument('--use_gpu', type=string_to_boolean, default=True,
+                        help='Toggles the use of GPU')
+    parser.add_argument('--use_tensorboard', type=string_to_boolean,
+                        default=True,
+                        help='Toggles the use of Tensorboard')
 
     # dataset
-    parser.add_argument('--data_path', type=str, default='../data/c256/')
-    parser.add_argument('--train_data_path', type=str,
-                        default='caltech_256_60_train_nobg_norm.hdf5')
-    parser.add_argument('--train_x_key', type=str, default='train_x')
-    parser.add_argument('--train_y_key', type=str, default='train_y')
-    parser.add_argument('--test_data_path', type=str,
-                        default='caltech_256_60_test_nobg_norm.hdf5')
-    parser.add_argument('--test_x_key', type=str, default='test_x')
-    parser.add_argument('--test_y_key', type=str, default='test_y')
+    # parser.add_argument('--data_path', type=str, default='../data/c256/')
+    # parser.add_argument('--train_data_path', type=str,
+    #                     default='caltech_256_60_train_nobg_norm.hdf5')
+    # parser.add_argument('--train_x_key', type=str, default='train_x')
+    # parser.add_argument('--train_y_key', type=str, default='train_y')
+    # parser.add_argument('--test_data_path', type=str,
+    #                     default='caltech_256_60_test_nobg_norm.hdf5')
+    # parser.add_argument('--test_x_key', type=str, default='test_x')
+    # parser.add_argument('--test_y_key', type=str, default='test_y')
 
     # path
-    parser.add_argument('--log_path', type=str, default='./logs')
-    parser.add_argument('--model_save_path', type=str, default='./models')
+    parser.add_argument('--model_save_path', type=str, default='./weights',
+                        help='Path for saving weights')
 
     # epoch step size
     parser.add_argument('--loss_log_step', type=int, default=1)
@@ -112,10 +160,10 @@ if __name__ == '__main__':
     config = parser.parse_args()
 
     args = vars(config)
-    print('------------ Options -------------')
-    for k, v in sorted(args.items()):
-        print('%s: %s' % (str(k), str(v)))
-    print('-------------- End ----------------')
+    print(args)
+    write_print('hello.txt', '------------ Options -------------')
+    for k, v in args.items():
+        write_print('hello.txt', '{}: {}'.format(str(k), str(v)))
+    write_print('hello.txt', '-------------- End ----------------')
 
-    version = save_config(config)
-    main(version, config)
+    # main(version, config)
