@@ -43,25 +43,24 @@ class Compose(object):
 
     def __call__(self,
                  image,
-                 labels=None):
+                 label=None):
         """Executed when the class is called as a function
 
         Arguments:
             image {np.ndarray} -- image pixels represented as np.ndarray
 
         Keyword Arguments:
-            labels {np.ndarray} -- corresponding class of the image
-            (default: {None})
+            label {str} -- corresponding class of the image (default: {None})
 
         Returns:
-            np.ndarray, int -- transformed image pixels, corresponding class
+            np.ndarray, str -- transformed image pixels, corresponding class
             of the image
         """
 
         for transform in self.transforms:
-            image, labels = transform(image, labels)
+            image, label = transform(image, label)
 
-        return image, labels
+        return image, label
 
 
 class ConvertToFloat(object):
@@ -74,22 +73,21 @@ class ConvertToFloat(object):
 
     def __call__(self,
                  image,
-                 labels=None):
+                 label=None):
         """Executed when the class is called as a function
 
         Arguments:
             image {np.ndarray} -- image pixels represented as np.ndarray
 
         Keyword Arguments:
-            labels {np.ndarray} -- corresponding class of the image
-            (default: {None})
+            label {str} -- corresponding class of the image (default: {None})
 
         Returns:
-            np.ndarray, int -- image pixels casted to floating-point data type,
+            np.ndarray, str -- image pixels casted to floating-point data type,
             corresponding class of the image
         """
 
-        return image.astype(np.float32), labels
+        return image.astype(np.float32), label
 
 
 class SubtractMeans(object):
@@ -108,24 +106,23 @@ class SubtractMeans(object):
 
     def __call__(self,
                  image,
-                 labels=None):
+                 label=None):
         """Executed when the class is called as a function
 
         Arguments:
             image {np.ndarray} -- image pixels represented as np.ndarray
 
         Keyword Arguments:
-            labels {np.ndarray} -- corresponding class of the image
-            (default: {None})
+            label {str} -- corresponding class of the image (default: {None})
 
         Returns:
-            np.ndarray, int -- image pixels subtracted by the mean,
+            np.ndarray, str -- image pixels subtracted by the mean,
             corresponding class of the image
         """
 
         image = image.astype(np.float32)
         image -= self.mean
-        return image.astype(np.float32), labels
+        return image.astype(np.float32), label
 
 
 class Resize(object):
@@ -144,23 +141,22 @@ class Resize(object):
 
     def __call__(self,
                  image,
-                 labels=None):
+                 label=None):
         """Executed when the class is called as a function
 
         Arguments:
             image {np.ndarray} -- image pixels represented as np.ndarray
 
         Keyword Arguments:
-            labels {np.ndarray} -- corresponding class of the image
-            (default: {None})
+            label {str} -- corresponding class of the image (default: {None})
 
         Returns:
-            np.ndarray, int -- pixels of the resized image, corresponding class
+            np.ndarray, str -- pixels of the resized image, corresponding class
             of the image
         """
 
         image = cv2.resize(image, (self.size, self.size))
-        return image, labels
+        return image, label
 
 
 class RandomSaturation(object):
@@ -190,7 +186,7 @@ class RandomSaturation(object):
 
     def __call__(self,
                  image,
-                 labels=None):
+                 label=None):
         """Executed when the class is called as a function
 
         Arguments:
@@ -198,11 +194,10 @@ class RandomSaturation(object):
             should be in HSV color space.
 
         Keyword Arguments:
-            labels {np.ndarray} -- corresponding class of the image
-            (default: {None})
+            label {str} -- corresponding class of the image (default: {None})
 
         Returns:
-            np.ndarray, int -- image pixels in HSV color space with adjusted
+            np.ndarray, str -- image pixels in HSV color space with adjusted
             saturation channel, corresponding class of the image
         """
 
@@ -212,7 +207,7 @@ class RandomSaturation(object):
             # limits the value of the saturation channel to 1.0
             image[:, :, 1] = np.clip(image[:, :, 1], a_min=0.0, a_max=1.0)
 
-        return image, labels
+        return image, label
 
 
 class RandomHue(object):
@@ -236,7 +231,7 @@ class RandomHue(object):
 
     def __call__(self,
                  image,
-                 labels=None):
+                 label=None):
         """Executed when the class is called as a function
 
         Arguments:
@@ -244,11 +239,10 @@ class RandomHue(object):
             should be in HSV color space.
 
         Keyword Arguments:
-            labels {np.ndarray} -- corresponding class of the image
-            (default: {None})
+            label {str} -- corresponding class of the image (default: {None})
 
         Returns:
-            np.ndarray, int -- image pixels in HSV color space with adjusted
+            np.ndarray, str -- image pixels in HSV color space with adjusted
             hue channel, corresponding class of the image
         """
 
@@ -259,7 +253,7 @@ class RandomHue(object):
             image[:, :, 0][image[:, :, 0] > 360.0] -= 360.0
             image[:, :, 0][image[:, :, 0] < 0.0] += 360.0
 
-        return image, labels
+        return image, label
 
 
 class RandomLightingNoise(object):
@@ -276,18 +270,17 @@ class RandomLightingNoise(object):
 
     def __call__(self,
                  image,
-                 labels=None):
+                 label=None):
         """Executed when the class is called as a function
 
         Arguments:
             image {np.ndarray} -- image pixels represented as np.ndarray
 
         Keyword Arguments:
-            labels {np.ndarray} -- corresponding class of the image
-            (default: {None})
+            label {str} -- corresponding class of the image (default: {None})
 
         Returns:
-            np.ndarray, int -- pixels of the image with swapped channels,
+            np.ndarray, str -- pixels of the image with swapped channels,
             corresponding class of the image
         """
 
@@ -296,7 +289,7 @@ class RandomLightingNoise(object):
             shuffle = SwapChannels(swap)
             image = shuffle(image)
 
-        return image, labels
+        return image, label
 
 
 class ConvertColor(object):
@@ -321,18 +314,17 @@ class ConvertColor(object):
 
     def __call__(self,
                  image,
-                 labels=None):
+                 label=None):
         """Executed when the class is called as a function
 
         Arguments:
             image {np.ndarray} -- image pixels represented as np.ndarray
 
         Keyword Arguments:
-            labels {np.ndarray} -- corresponding class of the image
-            (default: {None})
+            label {str} -- corresponding class of the image (default: {None})
 
         Returns:
-            np.ndarray, int -- pixels of the image converted to the output
+            np.ndarray, str -- pixels of the image converted to the output
             color space, corresponding class of the image
         """
 
@@ -343,7 +335,7 @@ class ConvertColor(object):
         else:
             raise NotImplementedError
 
-        return image, labels
+        return image, label
 
 
 class RandomContrast(object):
@@ -372,18 +364,17 @@ class RandomContrast(object):
 
     def __call__(self,
                  image,
-                 labels=None):
+                 label=None):
         """Executed when the class is called as a function
 
         Arguments:
             image {np.ndarray} -- image pixels represented as np.ndarray.
 
         Keyword Arguments:
-            labels {np.ndarray} -- corresponding class of the image
-            (default: {None})
+            label {str} -- corresponding class of the image (default: {None})
 
         Returns:
-            np.ndarray, int -- image pixels with adjusted contrast,
+            np.ndarray, str -- image pixels with adjusted contrast,
             corresponding class of the image
         """
 
@@ -393,7 +384,7 @@ class RandomContrast(object):
             # multiplies the random constant to the pixel values
             image *= alpha
 
-        return image, labels
+        return image, label
 
 
 class RandomBrightness(object):
@@ -416,18 +407,17 @@ class RandomBrightness(object):
 
     def __call__(self,
                  image,
-                 labels=None):
+                 label=None):
         """Executed when the class is called as a function
 
         Arguments:
             image {np.ndarray} -- image pixels represented as np.ndarray.
 
         Keyword Arguments:
-            labels {np.ndarray} -- corresponding class of the image
-            (default: {None})
+            label {str} -- corresponding class of the image (default: {None})
 
         Returns:
-            np.ndarray, int -- image pixels with adjusted brightness,
+            np.ndarray, str -- image pixels with adjusted brightness,
             corresponding class of the image
         """
 
@@ -437,7 +427,7 @@ class RandomBrightness(object):
             # adds the random constant to the pixel values
             image += delta
 
-        return image, labels
+        return image, label
 
 
 class ToCV2Image(object):
@@ -452,24 +442,23 @@ class ToCV2Image(object):
 
     def __call__(self,
                  image,
-                 labels=None):
+                 label=None):
         """Executed when the class is called as a function
 
         Arguments:
             image {torch.Tensor} -- image pixels represented as torch.Tensor.
 
         Keyword Arguments:
-            labels {np.ndarray} -- corresponding class of the image
-            (default: {None})
+            label {str} -- corresponding class of the image (default: {None})
 
         Returns:
-            np.ndarray, int -- image pixels represented as np.ndarray,
+            np.ndarray, str -- image pixels represented as np.ndarray,
             corresponding class of the image
         """
 
         # permute() is used to switch the channels from RGB to BGR
         image = image.cpu().numpy().astype(np.float32).transpose((2, 1, 0))
-        return image, labels
+        return image, label
 
 
 class ToTensor(object):
@@ -484,24 +473,23 @@ class ToTensor(object):
 
     def __call__(self,
                  image,
-                 labels=None):
+                 label=None):
         """Executed when the class is called as a function
 
         Arguments:
             image {np.ndarray} -- image pixels represented as np.ndarray.
 
         Keyword Arguments:
-            labels {np.ndarray} -- corresponding class of the image
-            (default: {None})
+            label {str} -- corresponding class of the image (default: {None})
 
         Returns:
-            torch.Tensor, int -- image pixels represented as torch.Tensor,
+            torch.Tensor, str -- image pixels represented as torch.Tensor,
             corresponding class of the image
         """
 
         # permute() is used to switch the channels from BGR to RGB
         image = torch.from_numpy(image.astype(np.float32)).permute(2, 1, 0)
-        return image, labels
+        return image, label
 
 
 class RandomSampleCrop(object):
@@ -522,18 +510,17 @@ class RandomSampleCrop(object):
 
     def __call__(self,
                  image,
-                 labels=None):
+                 label=None):
         """Executed when the class is called as a function
 
         Arguments:
-            image {torch.Tensor} -- image pixels represented as torch.Tensor.
+            image {np.ndarray} -- image pixels represented as np.ndarray.
 
         Keyword Arguments:
-            labels {np.ndarray} -- corresponding class of the image
-            (default: {None})
+            label {str} -- corresponding class of the image (default: {None})
 
         Returns:
-            np.ndarray, int -- image pixels of the randomly cropped image,
+            np.ndarray, str -- image pixels of the randomly cropped image,
             corresponding class of the image
         """
 
@@ -550,7 +537,7 @@ class RandomSampleCrop(object):
 
             image = image[top_y:top_y + size, top_x:top_x + size, :]
 
-        return image, labels
+        return image, label
 
 
 class RandomMirror(object):
@@ -563,18 +550,17 @@ class RandomMirror(object):
 
     def __call__(self,
                  image,
-                 labels=None):
+                 label=None):
         """Executed when the class is called as a function
 
         Arguments:
             image {np.ndarray} -- image pixels represented as np.ndarray.
 
         Keyword Arguments:
-            labels {np.ndarray} -- corresponding class of the image
-            (default: {None})
+            label {str} -- corresponding class of the image (default: {None})
 
         Returns:
-            np.ndarray, int -- image pixels flipped horizontally, corresponding
+            np.ndarray, str -- image pixels flipped horizontally, corresponding
             class of the image
         """
 
@@ -583,7 +569,7 @@ class RandomMirror(object):
         if random.randint(2):
             image = image[:, ::-1, :]
 
-        return image, labels
+        return image, label
 
 
 class SwapChannels(object):
@@ -635,22 +621,22 @@ class PhotometricDistort(object):
 
     def __call__(self,
                  image,
-                 labels):
+                 label):
         """Executed when the class is called as a function
 
         Arguments:
             image {np.ndarray} -- image pixels represented as np.ndarray.
 
         Keyword Arguments:
-            labels {np.ndarray} -- corresponding class of the image
+            label {str} -- corresponding class of the image
 
         Returns:
-            np.ndarray, int -- image pixels applied with different random
+            np.ndarray, str -- image pixels applied with different random
             transformations, corresponding class of the image
         """
 
         image = image.copy()
-        image, labels = self.rand_brightness(image, labels)
+        image, label = self.rand_brightness(image, label)
 
         # applies RandomContrast() as the first transformation
         if random.randint(2):
@@ -659,9 +645,9 @@ class PhotometricDistort(object):
         # applies RandomContrast() as the last transformation
         else:
             distort = Compose(self.pd[1:])
-        image, labels = distort(image, labels)
+        image, label = distort(image, label)
 
-        return self.rand_light_noise(image, labels)
+        return self.rand_light_noise(image, label)
 
 
 class Augmentations(object):
@@ -690,21 +676,21 @@ class Augmentations(object):
 
     def __call__(self,
                  image,
-                 labels):
+                 label):
         """Executed when the class is called as a function
 
         Arguments:
             image {np.ndarray} -- image pixels represented as np.ndarray.
 
         Keyword Arguments:
-            labels {np.ndarray} -- corresponding class of the image
+            label {str} -- corresponding class of the image
 
         Returns:
-            np.ndarray, int -- image pixels applied with different augmentation
+            np.ndarray, str -- image pixels applied with different augmentation
             techniques, corresponding class of the image
         """
 
-        return self.augment(image, labels)
+        return self.augment(image, label)
 
 
 class BaseTransform(object):
@@ -728,18 +714,17 @@ class BaseTransform(object):
 
     def __call__(self,
                  image,
-                 labels=None):
+                 label=None):
         """Executed when the class is called as a function
 
         Arguments:
             image {np.ndarray} -- image pixels represented as np.ndarray.
 
         Keyword Arguments:
-            labels {np.ndarray} -- corresponding class of the image
-            (default: {None})
+            label {str} -- corresponding class of the image (default: {None})
 
         Returns:
-            np.ndarray, int -- image pixels applied with different augmentation
+            np.ndarray, str -- image pixels applied with different augmentation
             techniques, corresponding class of the image
         """
 
@@ -747,4 +732,4 @@ class BaseTransform(object):
         image = cv2.resize(image, dimensions).astype(np.float32)
         image -= self.mean
         image = image.astype(np.float32)
-        return image, labels
+        return image, label
