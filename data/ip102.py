@@ -9,18 +9,22 @@ class IP102(Dataset):
     def __init__(self,
                  data_path,
                  mode,
-                 new_size):
+                 new_size,
+                 image_transform=None):
         """Initializes the dataset
 
         Arguments:
             data_path {string} -- root path to the IP102 dataset
             mode {string} -- current mode of the network
             new_size {int} -- rescaled size of the image
+            image_transform {object} -- produces different dataset
+            augmentation techniques
         """
 
         self.data_path = data_path
         self.mode = mode
         self.new_size = new_size
+        self.image_transform = image_transform
 
         self.ids = []
         self.targets = []
@@ -80,6 +84,10 @@ class IP102(Dataset):
         image = cv2.imread(self.image_path % image_id)
         target = self.targets[index]
         height, width, _ = image.shape
+
+        if self.image_transform is not None:
+            image, target = self.image_transform(image, target)
+            image = image[:, :, (2, 1, 0)]
 
         return torch.from_numpy(image).permute(2, 0, 1), target, height, width
 
