@@ -43,7 +43,7 @@ class IP102(Dataset):
             for line in f:
                 values = line.split(' ')
                 self.ids.append(values[0])
-                self.targets.append(values[1])
+                self.targets.append(values[1].strip())
 
     def __len__(self):
         """Returns number of data in the dataset
