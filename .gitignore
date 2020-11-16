@@ -1,0 +1,8 @@
+*.pyc
+*.zip
+*.txt
+*.pth
+
+aug_test.py
+tester.py
+run_test.py
