@@ -5,7 +5,7 @@ import datetime
 import torch.nn as nn
 import torch.optim as optim
 from tqdm import tqdm
-from utils import to_var
+from utils.utils import to_var, write_print
 
 from model import VGGNet
 
@@ -14,7 +14,7 @@ class Solver(object):
 
     DEFAULTS = {}
 
-    def __init__(self, version, data_loader, config):
+    def __init__(self, version, data_loader, config, output_txt):
         """
         Initializes a Solver object
         """
@@ -23,10 +23,9 @@ class Solver(object):
         self.__dict__.update(Solver.DEFAULTS, **config)
         self.version = version
         self.data_loader = data_loader
+        self.output_txt = output_txt
 
         self.build_model()
-
-        # TODO: build tensorboard
 
         # start with a pre-trained model
         if self.pretrained_model:
@@ -68,9 +67,10 @@ class Solver(object):
         num_params = 0
         for p in model.parameters():
             num_params += p.numel()
-        print(name)
-        print(model)
-        print("The number of parameters: {}".format(num_params))
+        write_print(self.output_txt, name)
+        write_print(self.output_txt, str(model))
+        write_print(self.output_txt,
+                    'The number of parameters: {}'.format(num_params))
 
     def load_pretrained_model(self):
         """
@@ -78,7 +78,8 @@ class Solver(object):
         """
         self.model.load_state_dict(torch.load(os.path.join(
             self.model_save_path, '{}.pth'.format(self.pretrained_model))))
-        print('loaded trained model ver {}'.format(self.pretrained_model))
+        write_print(self.output_txt,
+                    'loaded trained model {}'.format(self.pretrained_model))
 
     def print_loss_log(self, start_time, iters_per_epoch, e, i, loss):
         """
@@ -105,9 +106,7 @@ class Solver(object):
                                     iters_per_epoch,
                                     loss)
 
-        # TODO: add tensorboard
-
-        print(log)
+        write_print(self.output_txt, log)
 
     def save_model(self, e):
         """
@@ -167,7 +166,7 @@ class Solver(object):
         for e in range(start, self.num_epochs):
             for i, (images, labels) in enumerate(tqdm(self.data_loader)):
                 images = to_var(images, self.use_gpu)
-                labels = to_var(labels, self.use_gpu)
+                labels = to_var(torch.LongTensor(labels), self.use_gpu)
 
                 loss = self.model_step(images, labels)
 
@@ -181,25 +180,25 @@ class Solver(object):
                 self.save_model(e)
 
             # evaluate on train dataset
-            if (e + 1) % self.train_eval_step == 0:
-                top_1_acc, top_5_acc = self.train_evaluate(e)
-                self.top_1_acc.append((e, top_1_acc))
-                self.top_5_acc.append((e, top_5_acc))
+            # if (e + 1) % self.train_eval_step == 0:
+            #     top_1_acc, top_5_acc = self.train_evaluate(e)
+            #     self.top_1_acc.append((e, top_1_acc))
+            #     self.top_5_acc.append((e, top_5_acc))
 
         # print losses
-        print('\n--Losses--')
+        write_print(self.output_txt, '\n--Losses--')
         for e, loss in self.losses:
-            print(e, '{:.4f}'.format(loss))
+            write_print(self.output_txt, str(e) + ' {:.4f}'.format(loss))
 
         # print top_1_acc
-        print('\n--Top 1 accuracy--')
+        write_print(self.output_txt, '\n--Top 1 accuracy--')
         for e, acc in self.top_1_acc:
-            print(e, '{:.4f}'.format(acc))
+            write_print(self.output_txt, str(e) + ' {:.4f}'.format(acc))
 
         # print top_5_acc
-        print('\n--Top 5 accuracy--')
+        write_print(self.output_txt, '\n--Top 5 accuracy--')
         for e, acc in self.top_5_acc:
-            print(e, '{:.4f}'.format(acc))
+            write_print(self.output_txt, str(e) + ' {:.4f}'.format(acc))
 
     def eval(self, data_loader):
         """
@@ -217,7 +216,7 @@ class Solver(object):
             for images, labels in data_loader:
 
                 images = to_var(images, self.use_gpu)
-                labels = to_var(labels, self.use_gpu)
+                labels = to_var(torch.LongTensor(labels), self.use_gpu)
 
                 output = self.model(images)
                 total += labels.size()[0]
@@ -248,7 +247,7 @@ class Solver(object):
             top_1_correct / total,
             top_5_correct / total
         )
-        print(log)
+        write_print(self.output_txt, log)
         return top_1_correct / total, top_5_correct / total
 
     def test(self):
@@ -260,4 +259,4 @@ class Solver(object):
             top_1_correct / total,
             top_5_correct / total
         )
-        print(log)
+        write_print(self.output_txt, log)
